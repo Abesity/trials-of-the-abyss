@@ -1,0 +1,14 @@
+# build output
+out/
+bin/
+dist/
+# save files written next to the game
+savegame*.txt
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+.vscode/
+__pycache__/
+tests/out/

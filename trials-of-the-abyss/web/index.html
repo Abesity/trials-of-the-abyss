@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trials of the Abyss · playable demo</title>
+<meta name="description" content="A top-down pixel RPG made for a first-year OOP course. Art and level design by Vinci F. Villanueva. Playable in the browser.">
+<link rel="preload" href="assets/fonts/maru-monica-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: MaruMonica; src: url(assets/fonts/maru-monica-latin.woff2) format('woff2'); font-display: block; }
+  :root { --abyss: #0f0f26; --deep: #3f3f74; --stone: #4c5580; --water: #5b6ee1; --ink: #d8def5; --dim: #8e98c4; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--abyss); color: var(--ink); }
+  body { font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; display: flex; flex-direction: column; align-items: center; }
+  header { width: min(100%, 960px); padding: 18px 16px 10px; display: flex; flex-wrap: wrap; gap: 6px 20px; align-items: baseline; justify-content: space-between; }
+  h1 { font: 400 34px/1 MaruMonica, monospace; margin: 0; letter-spacing: .5px; color: #fff; }
+  header p { margin: 0; color: var(--dim); }
+  header p b { color: var(--ink); font-weight: 600; }
+  main { width: min(100%, 960px); padding: 0 16px; }
+  .screen { position: relative; width: min(100%, calc((100vh - 200px) * 4 / 3)); min-width: min(100%, 320px); aspect-ratio: 4 / 3; margin: 0 auto;
+            border: 3px solid var(--stone); border-radius: 6px; background: #000; box-shadow: 0 0 0 6px var(--abyss), 0 0 0 9px var(--deep); }
+  canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; outline: none; }
+  #loading { position: absolute; inset: 0; display: grid; place-content: center; gap: 14px; text-align: center; background: #000; font-family: MaruMonica, monospace; }
+  #loading p { margin: 0; font-size: 22px; }
+  .track { width: 260px; height: 12px; border: 2px solid var(--stone); border-radius: 3px; }
+  #load-bar { height: 100%; width: 0; background: var(--water); transition: width .15s; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center; justify-content: space-between; padding: 12px 2px 4px; color: var(--dim); font-size: 14px; }
+  kbd { font: 13px MaruMonica, monospace; color: var(--ink); background: var(--deep); border-radius: 3px; padding: 1px 6px; }
+  button { font: inherit; color: var(--ink); background: transparent; border: 1px solid var(--stone); border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+  button:hover { border-color: var(--water); }
+  button:focus-visible, canvas:focus-visible { outline: 2px solid var(--water); outline-offset: 2px; }
+  footer { width: min(100%, 960px); padding: 6px 16px 22px; color: var(--dim); font-size: 13px; }
+  footer a { color: var(--ink); }
+  /* touch controls */
+  .touch { display: none; justify-content: space-between; align-items: center; padding: 14px 4px 4px; user-select: none; -webkit-user-select: none; touch-action: none; }
+  @media (pointer: coarse) { .touch { display: flex; } .keys-help { display: none; } }
+  .dpad { display: grid; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); gap: 4px; }
+  .dpad button, .acts button { border-radius: 10px; background: #1a1a3a; border: 2px solid var(--stone); font: 22px MaruMonica, monospace; padding: 0; touch-action: none; }
+  .dpad button.held, .acts button.held { background: var(--deep); border-color: var(--water); }
+  .acts { display: grid; grid-template-columns: repeat(2, 64px); gap: 10px; }
+  .acts button { height: 56px; font-size: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Trials of the Abyss</h1>
+  <p>A team RPG from first-year OOP · art &amp; level design by <b>Vinci F. Villanueva</b></p>
+</header>
+<main>
+  <div class="screen">
+    <canvas id="game" width="768" height="576" tabindex="0" aria-label="Trials of the Abyss game screen"></canvas>
+    <div id="loading"><p>Loading the Abyss…</p><div class="track"><div id="load-bar"></div></div></div>
+  </div>
+  <div class="bar">
+    <span class="keys-help"><kbd>WASD</kbd>/<kbd>Arrows</kbd> move · <kbd>Enter</kbd> confirm or interact · <kbd>I</kbd> inventory · <kbd>P</kbd> pause and save · <kbd>Esc</kbd> back · <kbd>Tab</kbd> buy/sell · <kbd>M</kbd> sound</span>
+    <button id="mute" type="button">Sound: on</button>
+  </div>
+  <div class="touch" aria-hidden="true">
+    <div class="dpad">
+      <span></span><button data-key="ArrowUp">▲</button><span></span>
+      <button data-key="ArrowLeft">◀</button><span></span><button data-key="ArrowRight">▶</button>
+      <span></span><button data-key="ArrowDown">▼</button><span></span>
+    </div>
+    <div class="acts">
+      <button data-key="KeyI">Bag</button><button data-key="KeyP">Menu</button>
+      <button data-key="Escape">Back</button><button data-key="Enter">OK</button>
+    </div>
+  </div>
+</main>
+<footer>
+  Made at Cebu Institute of Technology – University, March 2025, and restored in 2026.
+  Art, worlds and level design by Vinci F. Villanueva. Pixel-to-code integration by Miguel Matheo C. Rivero. Mechanics and gameplay by Christian Kyle B. Tapales.
+  Programming by Marc Louis P. Ortizano, Matt Cedric N. Ybanez and Wyben C. Daal.
+  Your saves stay in this browser.
+</footer>
+<script src="data.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
